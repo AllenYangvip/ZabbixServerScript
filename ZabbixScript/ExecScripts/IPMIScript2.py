@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# @Time    : 18-4-14 上午8:54
+# @Time    : 18-4-16 下午1:22
 # @Author  : Allen Yang
 # @Site    : 
-# @File    : IPMIScript.py
+# @File    : IPMIScript2.py
 # @Software: PyCharm
 # @E-mail  : yangjh@szkingdom.com
 
@@ -13,7 +13,6 @@ import pickle
 import time
 import os
 #
-
 
 
 def time_diff(c_time):
@@ -63,10 +62,10 @@ def set_cache(c_time, results, file_path):
 
 
 def get_cache(file_path):
-    '''
-    从给定的文件路径读取需要的文件，如果存在则读取，不存在活读取中出现错误，报告错误
-    :param file_path:
-    :return:
+    u'''
+        从给定的文件路径读取需要的文件，如果存在则读取，不存在活读取中出现错误，报告错误
+        :param file_path:
+        :return:
     '''
     try:
         with open(file_path, 'r') as f:
@@ -78,7 +77,7 @@ def get_cache(file_path):
 
 
 def l2d(lst):
-    '''
+    u'''
     sensor名称
     读取值
     单位
@@ -94,13 +93,30 @@ def l2d(lst):
     :return:
     '''
     make_dict = {}
-    title_list = ['value', 'unit', 'status', 'LNR', 'LC', 'LNC', 'UNC', 'UC', 'UNR']
-    for i in xrange(len(title_list)):
-        make_dict[title_list[i]]= lst[i].strip()
+    if lst[0].split()[0].strip() == '0x00':
+        make_dict['value'] = '0'
+        make_dict['status'] = lst[1].strip()
+    elif lst[0].split()[0].strip() == 'Not':
+        make_dict['value'] = '0'
+        make_dict['status'] = '无法读取'
+    elif lst[0].split()[0].strip() == 'no':
+        make_dict['value'] = '0'
+        make_dict['status'] = '未读'
+    else:
+        make_dict['value'] = lst[0].split()[0].strip()
+        make_dict['status'] = lst[1].strip()
     return make_dict
 
 
 def get_datas(host, user, pwd, openstion):
+    '''
+
+    :param host:
+    :param user:
+    :param pwd:
+    :param openstion:
+    :return:
+    '''
     cmd_lines = "ipmitool -I lanplus -H %s -U %s -P %s %s " % (host, user, pwd, openstion)
     source_data = subprocess.Popen(cmd_lines, shell=True, stdout=subprocess.PIPE)
     clean_da = source_data.stdout.read().splitlines()
@@ -118,10 +134,10 @@ def main(host, user, pwd, openstion, exp_time):
     1.将获取到的数据进行缓存。默认过期时间是180秒
     2.进入函数时，先读取缓存数据，并判断是否过期，如果过期，则重新缓存。
     3.为过期直接读取数据，然后返回。
-    :param host: ipmi被监控端ip
-    :param user: ipmi被监控端用户
-    :param pwd: ipmi被监控端密码
-    :param openstion: ipmi 获取数据方式
+    :param host:
+    :param user:
+    :param pwd:
+    :param openstion:
     :return:
     '''
     file_path = "/tmp/ipmi%s.pkl" % host
@@ -132,7 +148,7 @@ def main(host, user, pwd, openstion, exp_time):
                 exp_time = make_time_stemp(exp_time)
                 data = get_datas(host, user, pwd, openstion)
                 set_cache(exp_time, data, file_path)
-                print('时间过期。。。。。重新获取')
+
             else:
                 return dict(t_data)
     else:
@@ -155,18 +171,23 @@ if __name__ == '__main__':
     '''
     import sys
     args = sys.argv
-
-    # host = '192.168.5.80'
-    host = args[1]
-    # user = 'USERID'
-    user = args[2]
-    # pwd = 'PASSW0RD'
-    pwd = args[3]
-    name = args[4]
-    arg = args[5]
-    openstion = 'sensor list'
-    # ipmi = main(host, user, pwd, openstion,100)
-    # print(ipmi[name][arg])
+    try:
+        # host = '192.168.5.80'
+        host = args[1]
+        # user = 'USERID'
+        user = args[2]
+        # pwd = 'PASSW0RD'
+        pwd = args[3]
+        name = args[4]
+        arg = args[5]
+        # openstion = 'sensor list'
+        # ipmi = main(host, user, pwd, openstion,100)
+        # print(ipmi)
+        # print(ipmi[name][arg])
+        openstion = 'sdr list'
+    except Exception as e:
+        print(e)
+        print('err')
     # print(ipmi.keys())
     for i in xrange(10):
         try:
@@ -174,5 +195,8 @@ if __name__ == '__main__':
             print(ipmi[name][arg])
         except Exception as e:
             print("============%s"%e)
+
+    # openstion = 'sdr list'
+    # print test_2("192.168.70.126", "USERID", "PASSW0RD", openstion)
 
 
