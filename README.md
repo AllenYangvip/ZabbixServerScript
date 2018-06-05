@@ -1,8 +1,9 @@
 # ZabbixServerScript
 ##
-##此项目为ZabbixServer端的脚本，包含有微信抱紧脚本和IPMI服务器硬件状态
-## 此项目为ZabbixServer端的脚本，包含有微信抱紧脚本和IPMI服务器硬件状态
+##此项目为ZabbixServer端的脚本，包含有微信报警脚本和IPMI服务器硬件状态
+## 此项目为ZabbixServer端的脚本，包含有微信报警脚本和IPMI服务器硬件状态
 ## 目录结构：
+<<<<<<< HEAD
 ###### .
 ###### ├── AlertScripts           报警脚本所在包
 ###### │   ├── __init__.py
