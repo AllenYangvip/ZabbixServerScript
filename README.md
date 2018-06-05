@@ -3,16 +3,16 @@
 ##此项目为ZabbixServer端的脚本，包含有微信抱紧脚本和IPMI服务器硬件状态
 ## 此项目为ZabbixServer端的脚本，包含有微信抱紧脚本和IPMI服务器硬件状态
 ## 目录结构：
-.
-├── AlertScripts           报警脚本所在包
-│   ├── __init__.py
-│   └── ZabbixAlert.py     微信报警脚本
-└── ExecScripts            监控脚本所在包
-    ├── __init__.py
-    ├── IPMIScript2.py     改良版的通过IPMI获取硬件信息的主脚本
-    ├── IPMIScript.py      
-    ├── read_item.py       读取硬件信息的辅助脚本
-    └── test.py
+### .
+### ├── AlertScripts           报警脚本所在包
+### │   ├── __init__.py
+### │   └── ZabbixAlert.py     微信报警脚本
+### └── ExecScripts            监控脚本所在包
+###     ├── __init__.py
+###     ├── IPMIScript2.py     改良版的通过IPMI获取硬件信息的主脚本
+###     ├── IPMIScript.py      
+###     ├── read_item.py       读取硬件信息的辅助脚本
+###     └── test.py
 
  IPMI详情：
  该版本已经是我做的第三版了，因为Zabbix通过自身的IPMI监控获取硬件，总是出现中断现象。于是，部门领导将改进任务交给了我，在我研究下。
