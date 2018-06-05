@@ -19,7 +19,14 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 """
-
+:本脚本是Zabbix监控的WeChat的企业号报警脚本
+:通过用户输入：
+:   to_user     通过微信接口发送信息的接受用户       
+:   to_party    发送消息接收范围      
+:   agentid     授权方应用id      
+:   corpid      企业ID    
+:   corpsecret  应用秘钥     
+:   msg         要发送的消息
 """
 
 
@@ -40,14 +47,15 @@ def get_token(corpid, corpsecret):
 def send_msg(token, touser, toparty, agentid, msg, safe=0, totag=" @all", msgtype='text'):
     '''
     微信报警，返送数据函数。
+    https://work.weixin.qq.com/api/doc#10167
     :param token:   微信token
-    :param touser:  通过微信接口发送信息的接受用户
+    :param touser:  成员ID列表（消息接收者，多个接收者用‘|’分隔，最多支持1000个）。特殊情况：指定为@all，则向该企业应用的全部成员发送
     :param toparty: 发送消息接收范围（部门）
     :param agentid: 授权方应用id
-    :param msg:     发送的消息
-    :param safe:
-    :param totag:   标签名
-    :param msgtype: 消息类型
+    :param msg:     为微信中的"content"--消息内容，最长不超过2048个字节
+    :param safe:    表示是否是保密消息，0表示否，1表示是，默认0
+    :param totag:   标签ID列表，多个接收者用‘|’分隔，最多支持100个。当touser为@all时忽略本参数
+    :param msgtype: 消息类型，此时固定为：text
     :return:
     '''
     countent_url = " https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=" + token
@@ -133,8 +141,6 @@ def make_time_stemp():
 
 
 if __name__ == '__main__':
-    '''
-    '''
     to_user = sys.argv[1]           
     to_party = sys.argv[2]          
     agentid = sys.argv[3]           
