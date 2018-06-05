@@ -11,6 +11,7 @@ import ConfigParser
 import datetime
 import urllib2
 import json
+import stat
 import sys
 import os
 
@@ -20,6 +21,8 @@ sys.setdefaultencoding('utf-8')
 """
 
 """
+
+
 def get_token(corpid, corpsecret):
     '''
     获取token函数
@@ -37,14 +40,14 @@ def get_token(corpid, corpsecret):
 def send_msg(token, touser, toparty, agentid, msg, safe=0, totag=" @all", msgtype='text'):
     '''
     微信报警，返送数据函数。
-    :param token:
-    :param touser:
-    :param toparty:
-    :param agentid:
-    :param msg:
+    :param token:   微信token
+    :param touser:  通过微信接口发送信息的接受用户
+    :param toparty: 发送消息接收范围（部门）
+    :param agentid: 授权方应用id
+    :param msg:     发送的消息
     :param safe:
-    :param totag:
-    :param msgtype:
+    :param totag:   标签名
+    :param msgtype: 消息类型
     :return:
     '''
     countent_url = " https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=" + token
@@ -67,8 +70,8 @@ def get_cache(file_path):
     '''
     根据用户提供的缓存文件路径，获取具体缓存内容，
     即时反馈给用户。
-    :param file_path:
-    :return:
+    :param file_path:    保存文件缓存的路径
+    :return:    正确时：返回缓存时间戳，和缓存token   错误时：返回 “ERROR” 和错误信息
     '''
     try:
         conf = ConfigParser.ConfigParser()
@@ -85,9 +88,9 @@ def set_cache(c_time, token, file_path):
     通过用户传递过来的参数进行缓存，
     本缓存采用文件形式缓存数据。节省内存空间，且数据持久化，得到有效的保证
     ： 通过用户传递的时间戳、token、文件存放路径，来进行python的文件缓存
-    :param c_time:
-    :param token:
-    :param file_path:
+    :param c_time:   到期缓存时间戳
+    :param token:    微信token
+    :param file_path:  缓存路径
     :return:
     '''
     if os.path.exists(file_path):
@@ -98,6 +101,7 @@ def set_cache(c_time, token, file_path):
         conf.set("WeChatCache", "cache_time", c_time)
         conf.set("WeChatCache", "cache_token", token)
         conf.write(open(file_path,'w'))
+        os.chmod(file_path, stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)
     except Exception as e:
         return e
     return True

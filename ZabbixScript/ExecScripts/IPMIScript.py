@@ -168,11 +168,11 @@ if __name__ == '__main__':
     # ipmi = main(host, user, pwd, openstion,100)
     # print(ipmi[name][arg])
     # print(ipmi.keys())
-    for i in xrange(10):
-        try:
-            ipmi = main(host, user, pwd, openstion, 100)
-            print(ipmi[name][arg])
-        except Exception as e:
-            print("============%s"%e)
+
+    try:
+        ipmi = main(host, user, pwd, openstion, 100)
+        print(ipmi[name][arg])
+    except Exception as e:
+        print("============%s"%e)
 
 

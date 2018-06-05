@@ -189,12 +189,11 @@ if __name__ == '__main__':
         print(e)
         print('err')
     # print(ipmi.keys())
-    for i in xrange(10):
-        try:
-            ipmi = main(host, user, pwd, openstion, 100)
-            print(ipmi[name][arg])
-        except Exception as e:
-            print("============%s"%e)
+    try:
+        ipmi = main(host, user, pwd, openstion, 100)
+        print(ipmi[name][arg])
+    except Exception as e:
+        print("============%s"%e)
 
     # openstion = 'sdr list'
     # print test_2("192.168.70.126", "USERID", "PASSW0RD", openstion)
