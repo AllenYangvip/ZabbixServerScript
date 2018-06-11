@@ -3,7 +3,6 @@
 ##此项目为ZabbixServer端的脚本，包含有微信报警脚本和IPMI服务器硬件状态
 ## 此项目为ZabbixServer端的脚本，包含有微信报警脚本和IPMI服务器硬件状态
 ## 目录结构：
-<<<<<<< HEAD
 ###### .
 ###### ├── AlertScripts           报警脚本所在包
 ###### │   ├── __init__.py
@@ -36,4 +35,3 @@
 ###### Power Supply 2   | na         | discrete   | na    | na        | na        | na        | na        | na        | na        
 ###### Power Supplies   | 0x0        | discrete   | 0x0880| na        | na        | na        | na        | na        | na        
 ###### Fan 1            | 9.800      | percent    | ok    | na        | na        | na        | na        | na        | na        
-###### Fan 2            | 12.936     | percent    | ok    | na        | na        | na        | na        | na        | na        
