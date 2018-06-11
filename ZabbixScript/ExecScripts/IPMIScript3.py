@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# @Time    : 18-4-16 下午1:22
+# @Time    : 18-6-6 16:52
 # @Author  : Allen Yang
 # @Site    : 
-# @File    : IPMIScript2.py
+# @File    : IPMIScript3.py
 # @Software: PyCharm
 # @E-mail  : yangjh@szkingdom.com
+# @E-mail  : allenyangvip@126.com
 
 
 import subprocess
@@ -95,18 +96,35 @@ def l2d(lst):
     :return:
     '''
     make_dict = {}
-    if lst[0].split()[0].strip() == '0x00':
-        make_dict['value'] = '0'
-        make_dict['status'] = lst[1].strip()
-    elif lst[0].split()[0].strip() == 'Not':
-        make_dict['value'] = '0'
-        make_dict['status'] = '无法读取'
-    elif lst[0].split()[0].strip() == 'no':
-        make_dict['value'] = '0'
-        make_dict['status'] = '未读'
+    # if lst[0].split()[0].strip() == '0x00':
+    #     make_dict['value'] = '0'
+    #     make_dict['status'] = lst[1].strip()
+    # elif lst[0].split()[0].strip() == 'Not':
+    #     make_dict['value'] = '0'
+    #     make_dict['status'] = '无法读取'
+    # elif lst[0].split()[0].strip() == 'no':
+    #     make_dict['value'] = '0'
+    #     make_dict['status'] = '未读'
+    # else:
+    #     make_dict['value'] = lst[0].split()[0].strip()
+    #     make_dict['status'] = lst[1].strip()
+    # status 取值:
+    #  0:No Reading 获取其他
+    #  1:OK
+    if lst[1].strip().lower() == "ok":
+        make_dict['status'] = 1
+        # 判断是否有数字在最后一项中则过滤数字为value
+        # 否则value值为字符串其内容如果为空的话显示null
+        if filter(str.isdigit, lst[-1].strip()):
+            make_dict['value'] = lst[-1].strip().split()[0]
+        else:
+            make_dict['value'] = 0
     else:
-        make_dict['value'] = lst[0].split()[0].strip()
-        make_dict['status'] = lst[1].strip()
+        # 不是OK的话，其实存在两种状况，一种是没有这个设备，一种是出现问题。
+        # 而出现问题现在不能判断。所以就先做不存在这个设备的问题
+
+        make_dict['value'] = 0
+        make_dict['status'] = 0
     return make_dict
 
 
@@ -182,22 +200,12 @@ if __name__ == '__main__':
         pwd = args[3]
         name = args[4]
         arg = args[5]
-        # openstion = 'sensor list'
-        # ipmi = main(host, user, pwd, openstion,100)
-        # print(ipmi)
+        openstion = 'sdr elist'
+        ipmi = main(host, user, pwd, openstion,100)
+        print(ipmi)
         # print(ipmi[name][arg])
-        openstion = 'sdr list'
+
     except Exception as e:
         print(e)
         print('err')
-    # print(ipmi.keys())
-    try:
-        ipmi = main(host, user, pwd, openstion, 100)
-        print(ipmi[name][arg])
-    except Exception as e:
-        print("============%s"%e)
-
-    # openstion = 'sdr list'
-    # print test_2("192.168.70.126", "USERID", "PASSW0RD", openstion)
-
 

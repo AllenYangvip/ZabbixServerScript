@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# @Time    : 18-4-16 下午1:22
+# @Time    : 18-6-7 14:52
 # @Author  : Allen Yang
 # @Site    : 
-# @File    : IPMIScript2.py
+# @File    : IPMIScript4.py
 # @Software: PyCharm
 # @E-mail  : yangjh@szkingdom.com
+# @E-mail  : allenyangvip@126.com
 
 
 import subprocess
@@ -13,6 +14,7 @@ import pickle
 import time
 import stat
 import os
+import re
 #
 
 
@@ -91,22 +93,66 @@ def l2d(lst):
     Upper Critical
     Upper Non-Recoverable
     将所有列值转换为组合值为字典
+    value值：
+        含数字
+        不含数字：
+            不存在的：
+                No Reading
+                Device Absent    status值为：OK
+            存在的：
+                Present
+                Connected
+                Drive Present
+                Presence Detected
+                Transition to OK
+                Limit Not Exceeded
+                Fully Redundant
+
+            存在，错误的：
+                Drive Present, In Failed Array
+            可更换设备：
+                Logical FRU xxxx
+    status 值：
+        OK：正常的
+        ns：未知或不存在    value值：No Reading
+
+    设置：
+        设备状态---status值：
+            ok   ===>   1
+            ns   ===>   0
+        设备返回值：--- value值
+            1.有数字，返回数字
+            2.没数字：
+                包含：
+                Present、Connected、Drive Present、Presence Detected
+                Transition to OK、Limit Not Exceeded、Fully Redundant的返回1
+                包含：No Reading、Device Absent或者为空/Unknown Progress===>0
+                包含：Drive Present, In Failed Array ===> -1
+                包含：Power off/down  关机状态   ===> "Power off/down"
     :param lst:
     :return:
     '''
-    make_dict = {}
-    if lst[0].split()[0].strip() == '0x00':
-        make_dict['value'] = '0'
-        make_dict['status'] = lst[1].strip()
-    elif lst[0].split()[0].strip() == 'Not':
-        make_dict['value'] = '0'
-        make_dict['status'] = '无法读取'
-    elif lst[0].split()[0].strip() == 'no':
-        make_dict['value'] = '0'
-        make_dict['status'] = '未读'
+    make_dict = dict()
+    if lst[1].strip().lower() == "ok":
+        make_dict['status'] = 1
     else:
-        make_dict['value'] = lst[0].split()[0].strip()
-        make_dict['status'] = lst[1].strip()
+        make_dict['status'] = 0
+
+    # 判断value值
+    if re.findall(r"^\d+.*",lst[-1].strip()):
+        make_dict['value'] = lst[-1].strip().split()[0]
+    else:
+        #     包含：No Reading、Device Absent或者为空===>0
+        if "no reading" in lst[-1].strip().lower() or "absent" in lst[-1].strip().lower() \
+                or lst[-1].strip().lower() == "" or "unknown" in lst[-1].strip().lower():
+            make_dict['value'] = 0
+        elif "failed" in lst[-1].strip().lower() or "err" in lst[-1].strip().lower():
+            make_dict['value'] = -1
+        else:
+            if make_dict['status'] == 1:
+                make_dict['value'] = 1
+            else:
+                make_dict['value'] = 0
     return make_dict
 
 
@@ -126,7 +172,12 @@ def get_datas(host, user, pwd, openstion):
     result = {}
     for i in clean_da:
         mid_data = i.split("|")
+        if result.has_key(mid_data[0].strip()):
+            # print("重复：%s"%mid_data[0].strip())
+            # 防止出现重复值
+            continue
         result[mid_data[0].strip()] = l2d(mid_data[1:])
+
     return result
 
 
@@ -182,22 +233,12 @@ if __name__ == '__main__':
         pwd = args[3]
         name = args[4]
         arg = args[5]
-        # openstion = 'sensor list'
-        # ipmi = main(host, user, pwd, openstion,100)
-        # print(ipmi)
+        openstion = 'sdr elist all'
+        ipmi = main(host, user, pwd, openstion,100)
+        print(ipmi)
         # print(ipmi[name][arg])
-        openstion = 'sdr list'
+
     except Exception as e:
         print(e)
         print('err')
-    # print(ipmi.keys())
-    try:
-        ipmi = main(host, user, pwd, openstion, 100)
-        print(ipmi[name][arg])
-    except Exception as e:
-        print("============%s"%e)
-
-    # openstion = 'sdr list'
-    # print test_2("192.168.70.126", "USERID", "PASSW0RD", openstion)
-
 
